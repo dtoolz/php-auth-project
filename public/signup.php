@@ -1,8 +1,14 @@
 <?php
 require "../private/autoload.php";
 
+    $Error = '';
    if($_SERVER['REQUEST_METHOD'] == "POST"){
-     print_r($_POST);
+     //print_r($_POST);
+     $email = $_POST['email'];
+     if ( !preg_match("/^[\w\-]+@[\w\-]+.[\w\-]+$/", $email) ) {
+       $Error = "Please enter a valid email";
+     }
+     $password = $_POST['password'];
    }
 ?>
 
@@ -39,6 +45,13 @@ require "../private/autoload.php";
 
     </style>
     <form method="post">
+        <div>
+            <?php 
+              if (isset($Error) && $Error != "") {
+                echo $Error;
+              }
+            ?>
+        </div>
         <div id="signup-title">Sign Up</div>
         <input id="textbox" type="email" name="email" required><br>
         <input id="textbox" type="password" name="password" required><br><br>
