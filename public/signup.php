@@ -5,10 +5,23 @@ require "../private/autoload.php";
    if($_SERVER['REQUEST_METHOD'] == "POST"){
      //print_r($_POST);
      $email = $_POST['email'];
-     if ( !preg_match("/^[\w\-]+@[\w\-]+.[\w\-]+$/", $email) ) {
+     if ( !preg_match("/^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/", $email) ) {
        $Error = "Please enter a valid email";
      }
-     $password = $_POST['password'];
+     $date = date("Y-m-d H:i:s");
+     $url_address = get_random_string(60);//my functions
+     $username = trim($_POST['username']);
+     if ( !preg_match("/^[a-zA-Z]+$/", $username) ) {
+        $Error = "Please enter a valid username";
+      }
+     $username = escp($_POST['username']);
+     $password = escp($_POST['password']);//my function
+
+     $query = "insert into users (url_address,username,password,email,date) values ('$url_address','$username','$password','$email','$date')";
+     //echo $query;
+     mysqli_query($connection, $query);
+     header("Location: login.php");
+     die;
    }
 ?>
 
@@ -53,8 +66,9 @@ require "../private/autoload.php";
             ?>
         </div>
         <div id="signup-title">Sign Up</div>
-        <input id="textbox" type="email" name="email" required><br>
-        <input id="textbox" type="password" name="password" required><br><br>
+        <input id="textbox" type="text" name="username" placeholder="username" required><br>
+        <input id="textbox" type="email" name="email" placeholder="email" required><br>
+        <input id="textbox" type="password" name="password" placeholder="password" required><br><br>
         <input type="submit" value="Signup">
     </form>
 </body>
