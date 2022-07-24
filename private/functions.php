@@ -19,3 +19,21 @@
  function escp ($passedInput) {
     return addslashes($passedInput);
  }
+
+
+ function check_login($connection) {
+      if (isset($_SESSION['url_address'])) {
+        $arr['url_address'] = $_SESSION['url_address'];
+        $query = "select * from users where url_address = :url_address limit 1";
+        $statement = $connection->prepare($query);
+        $check =  $statement->execute($arr);
+        if ($check) {
+            $data = $statement->fetchAll(PDO::FETCH_OBJ);
+            if(is_array($data) && count($data) > 0){
+                return $data[0];
+            }
+        }
+      }
+      header("Location: login.php");
+      die;
+ }

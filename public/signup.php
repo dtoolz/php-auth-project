@@ -2,6 +2,8 @@
 require "../private/autoload.php";
 
     $Error = '';
+    $email = '';
+    $username = '';
    if($_SERVER['REQUEST_METHOD'] == "POST"){
      //print_r($_POST);
      $email = $_POST['email'];
@@ -17,11 +19,35 @@ require "../private/autoload.php";
      $username = escp($_POST['username']);
      $password = escp($_POST['password']);//my function
 
-     $query = "insert into users (url_address,username,password,email,date) values ('$url_address','$username','$password','$email','$date')";
-     //echo $query;
-     mysqli_query($connection, $query);
-     header("Location: login.php");
-     die;
+     //check if email exists
+     $arr = false;
+     $arr['email'] = $email;
+     $query = "select * from users where email = :email limit 1";
+            $statement = $connection->prepare($query);
+            $check =  $statement->execute($arr);
+            if ($check) {
+                $data = $statement->fetchAll(PDO::FETCH_OBJ);
+                if(is_array($data) && count($data) > 0){
+                    $Error = "email address has already been used";
+                }
+            }
+     
+     if ($Error == "") {
+            $arr['url_address'] = $url_address;
+            $arr['username'] = $username;
+            $arr['password'] = $password;
+            $arr['email'] = $email;
+            $arr['date'] = $date;
+           //$query = "insert into users (url_address,username,password,email,date) values ('$url_address','$username','$password','$email','$date')";
+            $query = "insert into users (url_address,username,password,email,date) values (:url_address,:username,:password,:email,:date)";
+           //echo $query;
+           //mysqli_query($connection, $query);
+            $statement = $connection->prepare($query);
+            $statement->execute($arr);
+            header("Location: login.php");
+            die;
+     }
+
    }
 ?>
 
@@ -66,8 +92,8 @@ require "../private/autoload.php";
             ?>
         </div>
         <div id="signup-title">Sign Up</div>
-        <input id="textbox" type="text" name="username" placeholder="username" required><br>
-        <input id="textbox" type="email" name="email" placeholder="email" required><br>
+        <input id="textbox" type="text" name="username" value="<?php echo $username ?>" placeholder="username" required><br>
+        <input id="textbox" type="email" name="email" value="<?php echo $email ?>" placeholder="email" required><br>
         <input id="textbox" type="password" name="password" placeholder="password" required><br><br>
         <input type="submit" value="Signup">
     </form>

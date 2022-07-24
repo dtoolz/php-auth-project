@@ -1,5 +1,6 @@
 <?php
 require "../private/autoload.php";
+$user_data = check_login($connection); //my function for auth guard
 
 ?>
 
@@ -13,5 +14,9 @@ require "../private/autoload.php";
 </head>
 <body>
     <h1>Home Page</h1>
+    <div>Hi <?php echo $_SESSION['username'] ?></div>
+    <div style="float: right;">
+       <a href="logout.php">Logout</a>
+    </div>
 </body>
 </html>
