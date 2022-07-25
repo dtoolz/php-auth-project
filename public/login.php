@@ -3,7 +3,7 @@ require "../private/autoload.php";
 
     $Error = '';
     $email = '';
-   if($_SERVER['REQUEST_METHOD'] == "POST"){
+   if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_SESSION['token']) && isset($_POST['token']) && $_SESSION['token'] == $_POST['token']){
      $email = $_POST['email'];
      if ( !preg_match("/^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/", $email) ) {
        $Error = "Please enter a valid email or password";
@@ -29,7 +29,9 @@ require "../private/autoload.php";
                 }
             }
      }
+      $Error = "Incorrect Email or Password";
    }
+   $_SESSION['token'] = get_random_string(60);
 ?>
 
 
@@ -75,6 +77,7 @@ require "../private/autoload.php";
         <div id="signup-title">Login</div>
         <input id="textbox" type="email" name="email" value="<?php echo $email ?>" placeholder="email" required><br>
         <input id="textbox" type="password" name="password" placeholder="password" required><br><br>
+        <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
         <input type="submit" value="Login">
     </form>
 </body>
